@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 15px;
+            background: #1a73e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .burger-menu {
+            width: 30px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .burger-menu span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: white;
+            position: absolute;
+            transition: 0.3s;
+        }
+
+        .burger-menu span:nth-child(1) {
+            top: 0;
+        }
+
+        .burger-menu span:nth-child(2) {
+            top: 9px;
+        }
+
+        .burger-menu span:nth-child(3) {
+            bottom: 0;
+        }
+
+        .search-box {
+            padding: 15px;
+            background: white;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+
+        .contacts {
+            overflow-y: auto;
+            flex-grow: 1;
+            background: white;
+             a{
+                text-decoration: none;
+                color: #333;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+        }
+
+        .contact {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            color: #333;
+        }
+
+        .contact:hover {
+            background: #f0f2f5;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-icon{
+            width: 100px;
+            height: 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            p{
+                color: white;
+                margin: 0;
+            }
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f0f2f5;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 60%;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .received {
+            background: white;
+            color: #333;
+        }
+
+        .sent {
+            background: #1a73e8;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message-input {
+            padding: 15px;
+            background: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin: 0 10px;
+        }
+
+        .message-input button {
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .message-input button:hover {
+            background: #1557b0;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <div class="burger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="avatar-icon">
+                <p>{{ user.username}}</p>
+            </div>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Поиск...">
+        </div>
+        <div class="contacts">
+            {% for user_chat in chat %}
+                <div class="contact">
+                    {% if user_chat.first_user_id != user.id %}
+                    <a href="{% url 'chat' user_chat.id user_chat.first_user %}">
+                    {% elif user_chat.second_user_id != user.id %}
+                    <a href="{% url 'chat' user_chat.id user_chat.second_user %}">
+                    {% endif %}
+                        <div class="avatar">
+                            <img src="/api/placeholder/40/40" alt="Contact 1">
+                        </div>
+                        <div class="contact-info">
+                                    <div class="name">
+                                        {% if user_chat.first_user_id != user.id %}
+                                            {{ user_chat.first_user }}
+                                        {% else %}
+                                            {{ user_chat.second_user }}
+                                        {% endif %}
+                                    </div>
+                            <div class="last-message" style="color: #a3a3a3;font-size: 12px">{{ user_chat.last_message }}</div>
+                        </div>
+                    </a>
+                </div>
+        {% endfor %}
+    </div>
+        </div>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="avatar">
+                <img src="/api/placeholder/40/40" alt="Current Chat">
+            </div>
+            <div class="name">
+                {% if chat_between.first_user.id != user.id %}
+                    {{ chat_between.first_user }}
+                {% else %}
+                    {{ chat_between.second_user }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="chat-messages">
+            {% for message in messages %}
+                {% if message.sender == user.username %}
+                    <div class="message received">
+                        {{ message.text }}
+                    </div>
+                {% else %}
+                    <div class="message sent">
+                       {{ message.text }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <form class="message-input" method="post">
+            {% csrf_token %}
+            <input type="text" placeholder="Введите сообщение..."  name="message" required>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+</body>
+</html>

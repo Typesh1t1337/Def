@@ -1,0 +1,51 @@
+services:
+  redis:
+    image: redis:7.0.11-alpine
+
+
+  django:
+    container_name: django
+    build:
+      context: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - 8001:8000
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-x2uz958vuqzfn_+sr4zvzys601j8z=fs6%u#fs%m=9t(toyn4t
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+    entrypoint: /usr/src/app/entrypoint.sh
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-x2uz958vuqzfn_+sr4zvzys601j8z=fs6%u#fs%m=9t(toyn4t
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+    entrypoint: /usr/src/app/entrypoint.sh
+    depends_on:
+      - redis
+
+  postgresql:
+    container_name: postgres
+
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: MessengerCelery
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+
+volumes:
+  postgres_data:

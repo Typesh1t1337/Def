@@ -1,0 +1,181 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Контейнер для страницы */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Контейнер с бургер-меню и поисковой строкой */
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+/* Бургер-меню */
+.burger-menu {
+    position: absolute;
+    left: 20px;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.burger-menu span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #1a73e8;
+    position: absolute;
+    transition: 0.3s;
+}
+
+.burger-menu span:nth-child(1) { top: 0; }
+.burger-menu span:nth-child(2) { top: 9px; }
+.burger-menu span:nth-child(3) { bottom: 0; }
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.menu-overlay.active {
+    left: 0;
+}
+
+.menu-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: #f5f5f5;
+}
+
+.menu-item a {
+    text-decoration: none;
+    color: black;
+}
+
+/* Стили для формы поиска и кнопки сброса */
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+#search-input {
+    padding: 12px;
+    width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+}
+#search-input:focus{
+    outline: none;
+}
+
+.btn-reset {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.btn-reset:hover {
+    background-color: #d32f2f;
+}
+
+/* Стили для карточек пользователей */
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 20px;
+    padding-top: 30px;
+}
+
+.user-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    margin-right: auto;
+}
+
+.user-info h3 {
+    margin: 0;
+    color: #1a73e8;
+    font-size: 18px;
+}
+
+.user-info p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.btn-container {
+    display: flex;
+    align-items: center;
+}
+
+.btn-write {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-write:hover {
+    background-color: #1558a3;
+}

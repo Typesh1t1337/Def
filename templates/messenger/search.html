@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск пользователей</title>
+    <link rel="stylesheet" href="{% static 'messenger/search.css' %}">
+</head>
+<body>
+
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-item">Профиль</div>
+        <div class="menu-item"><a href="{% url 'index' %}">Список чатов</a></div>
+        <div class="menu-item"><a href="{% url 'logout' %}">Выйти</a></div>
+    </div>
+
+    <!-- Контейнер с сайдбаром и поисковым функционалом -->
+    <div class="container">
+        <!-- Контейнер с бургер-меню и поисковой строкой -->
+        <div class="header">
+            <!-- Бургер-меню -->
+            <div class="burger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <!-- Форма поиска -->
+            <form class="search-container" method="get">
+                {{ search_user.username }}
+                {% if is_filter %}
+                    <a class="btn-reset" id="resetFilters">Сбросить</a>
+                {% else %}
+                    <button type="submit" style="background-color: #1558a3; color: white" class="btn-reset" >Искать</button>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="user-list">
+            {% if is_filter %}
+                {% if users %}
+                    {% for user in users %}
+                        <div class="user-card">
+                            <img src="https://via.placeholder.com/60" alt="Avatar" class="avatar">
+                            <div class="user-info">
+                                <h3>{{ user.first_name  }} {{ user.last_name }}</h3>
+                                <p>@{{ user.username }}</p>
+                            </div>
+                            <div class="btn-container">
+                                <button class="btn-write">Написать</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center">
+                    <p>По вашему запросу ничего не найдено!</p>
+                </div> 
+                {% endif %}
+            {% else %}
+                <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center">
+                    <p>Ищите пользователей через поисковик!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            const menuOverlay = document.getElementById('menuOverlay');
+            isMenuOpen = !isMenuOpen;
+            menuOverlay.classList.toggle('active');
+            animateBurger();
+        }
+
+        function animateBurger() {
+            const spans = document.querySelectorAll('.burger-menu span');
+            if (isMenuOpen) {
+                spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
+            } else {
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const menuOverlay = document.getElementById('menuOverlay');
+            const burgerMenu = document.querySelector('.burger-menu');
+
+            // Проверяем, был ли клик вне бургер-меню и меню
+            if (isMenuOpen && !menuOverlay.contains(e.target) && !burgerMenu.contains(e.target)) {
+                isMenuOpen = false;
+                menuOverlay.classList.remove('active');
+                animateBurger();
+            }
+        });
+        
+    </script>
+    <script>
+    document.getElementById("resetFilters").addEventListener("click", function() {
+        // Получаем текущий URL
+        let currentUrl = new URL(window.location.href);
+        
+        
+        currentUrl.search = "";
+
+        // Меняем URL в адресной строке без перезагрузки страницы
+        window.history.pushState({}, '', currentUrl);
+
+        // (Опционально) Вы можете вызвать событие для перезагрузки списка
+        location.reload();  // Это обновит страницу, но с пустыми параметрами GET
+    });
+</script>
+</body>
+</html>
