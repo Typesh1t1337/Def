@@ -1,5 +1,19 @@
 from celery import shared_task
+from django.contrib.auth.models import User
+from celleryworker.models import Chat, Message
+
 
 @shared_task
-def sharedtask():
-    pass
+def save_message_task(chat_id,text,sender_id,receiver_id):
+    try:
+        chat = Chat.objects.get(id=chat_id)
+        sender = User.objects.get(id=sender_id)
+        receiver = User.objects.get(id=receiver_id)
+
+        message = Message.objects.create(chat=chat, text=text, sender=sender, receiver=receiver)
+
+
+        return message.id
+    except Exception as e:
+        print(f"Error in save_message_task: {e}")
+        return None

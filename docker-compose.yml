@@ -1,8 +1,13 @@
 services:
   redis:
-    image: redis:7.0.11-alpine
-
-
+    image: redis:alpine
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - default
   django:
     container_name: django
     build:
@@ -19,6 +24,9 @@ services:
     entrypoint: /usr/src/app/entrypoint.sh
     depends_on:
       - redis
+      - postgresql
+    networks:
+      - default
 
   celery:
     container_name: celery
@@ -30,9 +38,13 @@ services:
       - DEBUG=1
       - SECRET_KEY=django-insecure-x2uz958vuqzfn_+sr4zvzys601j8z=fs6%u#fs%m=9t(toyn4t
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+    command: celery -A MessengerDocker worker --loglevel=info
     entrypoint: /usr/src/app/entrypoint.sh
     depends_on:
       - redis
+    networks:
+      - default
+
 
   postgresql:
     container_name: postgres
@@ -46,6 +58,15 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgres/data
+    networks:
+      - default
 
 volumes:
+  redis_data:
   postgres_data:
+
+
+
+networks:
+  default:
+    driver: bridge

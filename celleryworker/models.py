@@ -5,7 +5,7 @@ from django.core.validators import ValidationError
 class Chat(models.Model):
     first_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='first_user')
     second_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='second_user')
-    last_message = models.TextField(max_length=500)
+    last_message = models.TextField(max_length=500,null=True,blank=True)
     last_changes = models.DateTimeField(auto_now=True)
 
 
@@ -40,7 +40,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     text = models.TextField(max_length=500)
-    file = models.FileField(upload_to='messages/', default=None,validators=[file_validator])
+    file = models.FileField(upload_to='messages/', default=None,validators=[file_validator],null=True,blank=True)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='chat', null=True)
     date = models.DateTimeField(auto_now_add=True,null=True)
 

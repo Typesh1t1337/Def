@@ -1,10 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render,redirect
 from django.views.generic import View,ListView,TemplateView
 import datetime
 
-from .forms import SearchForm
+from .forms import *
 from .models import Chat,Message
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -72,16 +73,16 @@ class Message_view(LoginRequiredMixin,View):
 
     def get(self, request,chat_id,nick):
         user = self.request.user
-
+        form = MessageSendForm()
         try:
             receiver = User.objects.get(username=nick)
         except User.DoesNotExist:
             raise Http404("User not found")
 
-        chat_list = Chat.objects.filter(Q(first_user = user) | Q(second_user = user)).order_by('-last_changes')
+        chat_list = Chat.objects.filter((Q(first_user=user) | Q(second_user=user)) &Q(last_message__isnull=False)).order_by('-last_changes')
 
-        chat_between = Chat.objects.filter((Q(first_user = user) | Q(second_user = user)) & (Q(first_user=receiver) | Q(second_user = receiver))).first()
-        messages = Message.objects.filter(chat_id=chat_between)
+        chat_between = Chat.objects.filter((Q(first_user=user) | Q(second_user=user)) & (Q(first_user=receiver) | Q(second_user=receiver))).first()
+        messages = Message.objects.filter(chat=chat_between)
         context = {
             'chat': chat_list,
             'user': user,
@@ -89,32 +90,31 @@ class Message_view(LoginRequiredMixin,View):
             'nick': nick,
             'chat_id': chat_id,
             'chat_between': chat_between,
+            'form': form
         }
         return render(request, self.template_name,context)
 
-    def post(self, request,chat_id,nick):
-        message= self.request.POST['message']
-        user = self.request.user
-
-        try:
-            receiver = User.objects.get(username=nick)
-        except User.DoesNotExist:
-            raise Http404("User not found")
-
-        chat = Chat.objects.filter((Q(first_user = user) | Q(second_user = user)) & (Q(first_user=receiver) | Q(second_user = receiver))).first()
-
-        chat.last_message = message
-        chat.last_changes = datetime.datetime.now()
-
-        chat.save(update_fields=['last_message','last_changes'])
-
-        Message.objects.create(sender=user,receiver=receiver,text=message,chat_id=chat_id)
-
-        return redirect('chat',chat_id,nick)
 
 
+@login_required
+def add_user_to_chat(request, name):
+    user = request.user
 
+    try:
+        nick_user = User.objects.get(username=name)
+    except User.DoesNotExist:
+        raise Http404("User not found")
 
+    user_check = Chat.objects.filter(
+        (Q(first_user=user) & Q(second_user=nick_user)) |
+        (Q(second_user=user) & Q(first_user=nick_user))
+    ).first()
+
+    if user_check:
+        return redirect('chat', chat_id=user_check.id, nick=name)
+    else:
+        new_chat = Chat.objects.create(first_user=user, second_user=nick_user)
+        return redirect('chat', chat_id=new_chat.id, nick=name)
 
 
 

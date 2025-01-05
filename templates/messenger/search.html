@@ -47,9 +47,10 @@
                                 <h3>{{ user.first_name  }} {{ user.last_name }}</h3>
                                 <p>@{{ user.username }}</p>
                             </div>
-                            <div class="btn-container">
+                            <form class="btn-container" method="get" action="{% url 'add_user_to_chat' user.username %}">
+                                {% csrf_token %}
                                 <button class="btn-write">Написать</button>
-                            </div>
+                            </form>
                         </div>
                     {% endfor %}
                 {% else %}

@@ -1,5 +1,6 @@
 from django import forms
 
+from celleryworker.models import Message
 
 
 class SearchForm(forms.Form):
@@ -9,3 +10,15 @@ class SearchForm(forms.Form):
         'placeholder':'Поиск пользователей',
     }
     ))
+
+class MessageSendForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['text']
+        widgets = {
+            'text': forms.TextInput(attrs={
+                'type': 'text',
+                'placeholder':'Введите сообщение...',
+                'id': 'message-input',
+                }
+            )}

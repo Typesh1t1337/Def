@@ -29,6 +29,8 @@ class RegisterView(View):
         user = User.objects.create_user(username=username,email=email,password=password)
         user.save()
 
+        login(request,user)
+
         return redirect('index')
 
 def logout_user(request):

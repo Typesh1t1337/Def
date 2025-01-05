@@ -14,6 +14,8 @@ import os
 
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'celleryworker.apps.CelleryworkerConfig',
     'account.apps.AccountConfig',
+    'django_htmx',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "MessengerDocker.urls"
@@ -133,14 +137,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -148,8 +144,19 @@ CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_BACKEND', 'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIME_ZONE = 'UTC'
 
 
+LOGIN_URL ='/account/login/'
+LOGIN_REDIRECT_URL = reverse_lazy('celleryworker:index')
+LOGOUT_REDIRECT_URL = reverse_lazy('account:logout')
 
-LOGIN_REDIRECT_URL = "celleryworker:index"
-LOGOUT_REDIRECT_URL = "account:register"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("redis_server", 6379)],
+        },
+    },
+}

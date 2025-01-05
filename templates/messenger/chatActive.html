@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -23,6 +24,26 @@
             display: flex;
             flex-direction: column;
         }
+         .burger-menu {
+            width: 30px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .burger-menu span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: white;
+            position: absolute;
+            transition: 0.3s;
+        }
+
+        .burger-menu span:nth-child(1) { top: 0; }
+        .burger-menu span:nth-child(2) { top: 9px; }
+        .burger-menu span:nth-child(3) { bottom: 0; }
+
 
         .header {
             padding: 15px;
@@ -100,20 +121,40 @@
             background: #f0f2f5;
         }
 
-        .avatar {
+        .avatar-con{
             width: 40px;
             height: 40px;
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+
+        }
+        .avatar {
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: #ddd;
             margin-right: 15px;
             overflow: hidden;
+            position: relative;
+             img {
+                width: 100%;
+                height: 100%;
+                 z-index: 1;
+            }
+        }
+        .online-status {
+            position: absolute;
+            bottom: 2px;
+            left:23px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #27ff27;
+            z-index: 100;
         }
 
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+
 
         .avatar-icon{
             width: 100px;
@@ -146,6 +187,7 @@
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+
         }
 
         .message {
@@ -153,6 +195,15 @@
             margin: 10px 0;
             padding: 10px;
             border-radius: 10px;
+            position: relative;
+            display: flex;
+            .message-date {
+                font-size: 12px; /* Маленький размер шрифта */
+                color: #979797;  /* Светло-серый цвет для невыделенной даты */
+                position: absolute;
+                top: 12px;
+                left: 93%;
+            }
         }
 
         .received {
@@ -200,16 +251,51 @@
             border-color: #1a73e8;
             box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
+           .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 1000;
+        }
+
+        .menu-overlay.active {
+            left: 0;
+        }
+
+        .menu-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            a{
+                text-decoration: none;
+                color: black;
+            }
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
     </style>
 </head>
 <body>
+     <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-item">Профиль</div>
+        <div class="menu-item"><a href="{% url 'search' %}">Поиск пользователей</a></div>
+        <div class="menu-item"><a href="{% url 'logout' %}">Выйти</a></div>
+    </div>
     <div class="sidebar">
-        <div class="header">
-            <div class="burger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+    <div class="header">
+        <div class="burger-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
             <div class="avatar-icon">
                 <p>{{ user.username}}</p>
             </div>
@@ -245,8 +331,11 @@
         </div>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="avatar">
-                <img src="/api/placeholder/40/40" alt="Current Chat">
+            <div class="avatar-con">
+                 <div class="avatar">
+                <img src="https://cdn-static.artguide.com/storage/news/9281/regular_detail_picture.jpg" alt="Current Chat">
+                </div>
+                <span class="online-status"></span>
             </div>
             <div class="name">
                 {% if chat_between.first_user.id != user.id %}
@@ -256,24 +345,123 @@
                 {% endif %}
             </div>
         </div>
-        <div class="chat-messages">
+        <div class="chat-messages" id="messages">
             {% for message in messages %}
-                {% if message.sender == user.username %}
-                    <div class="message received">
+                {% if message.receiver.username == user.username %}
+                    <div class="message received {% if forloop.last %}last-message{% endif %}">
+                        <span class="message-date">
+                            {{ message.date|date:"H:i" }}
+                        </span>
                         {{ message.text }}
                     </div>
-                {% else %}
-                    <div class="message sent">
+                {% elif message.sender.username == user.username %}
+                    <div class="message sent {% if forloop.last %}last-message{% endif %}">
+                        <span class="message-date">
+                            {{ message.date|date:"H:i" }}
+                        </span>
                        {{ message.text }}
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
-        <form class="message-input" method="post">
-            {% csrf_token %}
-            <input type="text" placeholder="Введите сообщение..."  name="message" required>
-            <button type="submit">Отправить</button>
-        </form>
+        <div class="message-input">
+            <input  id="message-input" type="text" placeholder="Type your message..." required>
+            <button id="message-form">Отправить</button>
+        </div>
     </div>
 </body>
+<script>
+        const chatId = '{{ chat_between.id }}';
+        const receiverId = {% if chat_between.first_user.id == user.id %}
+            '{{ chat_between.second_user.id }}';
+        {% else %}
+            '{{ chat_between.first_user.id }}';
+        {% endif %}
+
+        const userId = '{{ user.id }}';
+
+        const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+        console.log(chatSocket.url)
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+
+            messageDiv.classList.add('message', String(data.sender) !== String(receiverId) ? 'sent' : 'received');
+            messageDiv.innerHTML = `
+                <span class="message-date">${new Date(data.timestamp).toLocaleTimeString()}</span>
+                ${data.message}
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            const lastMessage = document.querySelector('.last-message');
+            if (lastMessage){
+                lastMessage.textContent = data.message;
+            }
+            
+            
+        };
+
+
+        const button = document.getElementById('message-form');
+
+        button.addEventListener('click', function () {
+            console.log("Hello Button");
+
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+
+            if (message === '') return;
+
+
+            chatSocket.send(
+                JSON.stringify({
+                    message: message,
+                    chat_id: chatId,
+                    sender: {{ user.id }},
+                    receiver: receiverId,
+                })
+            );
+
+            messageInput.value = '';
+        });
+
+
+
+        window.onbeforeunload = function () {
+            chatSocket.close();
+        };
+</script>
+<script src="{% static 'js/ws.js' %}">
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const messagesContainer = document.querySelector('.chat-messages'); // Правильный селектор
+
+    // Функция для прокрутки вниз
+    const scrollToBottom = () => {
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    };
+
+    // Скроллим вниз при загрузке страницы
+    scrollToBottom();
+
+    // Если новые сообщения добавляются динамически:
+    const observer = new MutationObserver(() => {
+        scrollToBottom();
+    });
+
+    // Следим за изменениями в контейнере сообщений
+    if (messagesContainer) {
+        observer.observe(messagesContainer, { childList: true });
+    }
+});
+
+</script>
 </html>
+
+

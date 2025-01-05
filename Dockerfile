@@ -15,4 +15,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 
 COPY . /usr/src/app/
 
+RUN pip install daphne
+
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "your_project.asgi:application"]
+
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
