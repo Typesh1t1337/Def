@@ -1,14 +1,16 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render,redirect
 from django.views.generic import View,ListView,TemplateView
 import datetime
+from .set_online_middleware import *
 
 from .forms import *
 from .models import Chat,Message
 from django.db.models import Q
-from django.contrib.auth.models import User
+
 
 class IndexView(LoginRequiredMixin,ListView):
     template_name = 'messenger/chatInactive.html'
@@ -27,7 +29,27 @@ class IndexView(LoginRequiredMixin,ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        contact_status = {}
+        user = self.request.user
+
+        for chat in self.object_list:
+            if chat.first_user == user:
+                contact_status[chat] = {
+                    'is_online': is_user_online(chat.second_user.id),
+                    'user': chat.second_user,
+                    'chat_id': chat.id,
+                    'last_message': chat.last_message,
+                }
+            else:
+                contact_status[chat] = {
+                    'is_online': is_user_online(chat.first_user_id),
+                    'user': chat.first_user,
+                    'chat_id': chat.id,
+                    'last_message': chat.last_message,
+                }
+
         context['user'] = self.request.user
+        context['chat_list_map'] = contact_status
 
         return context
 
@@ -35,7 +57,7 @@ class IndexView(LoginRequiredMixin,ListView):
 
 class SearchView(LoginRequiredMixin,ListView):
     template_name = 'messenger/search.html'
-    model = User
+    model = get_user_model()
     paginate_by = 20
     form_class = SearchForm
     context_object_name = 'users'
@@ -46,7 +68,7 @@ class SearchView(LoginRequiredMixin,ListView):
 
 
     def get_queryset(self):
-        query_set = User.objects.all().exclude(id=self.request.user.id)
+        query_set = get_user_model().objects.all().exclude(id=self.request.user.id)
         form = SearchForm(self.request.GET)
 
         if form.is_valid():
@@ -75,24 +97,49 @@ class Message_view(LoginRequiredMixin,View):
         user = self.request.user
         form = MessageSendForm()
         try:
-            receiver = User.objects.get(username=nick)
-        except User.DoesNotExist:
+            receiver = get_user_model().objects.get(username=nick)
+        except get_user_model().DoesNotExist:
             raise Http404("User not found")
 
         chat_list = Chat.objects.filter((Q(first_user=user) | Q(second_user=user)) &Q(last_message__isnull=False)).order_by('-last_changes')
 
         chat_between = Chat.objects.filter((Q(first_user=user) | Q(second_user=user)) & (Q(first_user=receiver) | Q(second_user=receiver))).first()
         messages = Message.objects.filter(chat=chat_between)
+
+
+        is_online = is_user_online(chat_between.first_user.id if chat_between.first_user == user else chat_between.second_user.id)
+
+        contact_status = {}
+
+
+        for chat in chat_list:
+            if chat.first_user == user:
+                contact_status[chat] = {
+                    'is_online': is_user_online(chat.second_user.id),
+                    'user': chat.second_user,
+                    'chat_id': chat.id,
+                    'last_message': chat.last_message,
+                }
+            else:
+                contact_status[chat] = {
+                    'is_online': is_user_online(chat.first_user_id),
+                    'user': chat.first_user,
+                    'chat_id': chat.id,
+                    'last_message': chat.last_message,
+                }
+
+
         context = {
-            'chat': chat_list,
+            'chat_list_map': contact_status,
             'user': user,
             'messages': messages,
             'nick': nick,
             'chat_id': chat_id,
             'chat_between': chat_between,
-            'form': form
+            'form': form,
+            'is_online': is_online,
         }
-        return render(request, self.template_name,context)
+        return render(request, self.template_name, context)
 
 
 
@@ -101,8 +148,8 @@ def add_user_to_chat(request, name):
     user = request.user
 
     try:
-        nick_user = User.objects.get(username=name)
-    except User.DoesNotExist:
+        nick_user = get_user_model().objects.get(username=name)
+    except get_user_model().DoesNotExist:
         raise Http404("User not found")
 
     user_check = Chat.objects.filter(
@@ -118,3 +165,5 @@ def add_user_to_chat(request, name):
 
 
 
+class ProfileView(LoginRequiredMixin,TemplateView):
+    template_name = 'messenger/profile.html'

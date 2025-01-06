@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'messenger/profile.css' %}">
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img src="/path/to/avatar.jpg" alt="User Avatar" class="avatar">
+                <span class="online-status"></span>
+            </div>
+            <div class="user-info">
+                <h2 class="username">John Doe</h2>
+                <p class="status">Online</p>
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <h3>Profile Details</h3>
+            <ul>
+                <li><strong>Email:</strong> john.doe@example.com</li>
+                <li><strong>Phone:</strong> +1234567890</li>
+                <li><strong>Joined:</strong> January 2020</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a class="edit-btn">Edit Profile</a>
+            <a class="logout-btn" href="{% url 'index' %}">Go back</a>
+        </div>
+    </div>
+</body>
+</html>

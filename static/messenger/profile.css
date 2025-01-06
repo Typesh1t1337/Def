@@ -1,0 +1,115 @@
+/* Основные стили */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fb;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-container {
+    width: 350px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.avatar-container {
+    position: relative;
+    margin-right: 15px;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4CAF50; /* Green border for the avatar */
+}
+
+.online-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #4CAF50; /* Green for online */
+    border: 3px solid white;
+}
+
+.user-info h2 {
+    font-size: 22px;
+    margin: 0;
+    color: #333;
+}
+
+.user-info p {
+    font-size: 16px;
+    color: #4CAF50;
+    margin: 5px 0 0;
+}
+
+.profile-details h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.profile-details ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.profile-details li {
+    font-size: 16px;
+    color: #555;
+    margin: 8px 0;
+}
+
+.profile-details li strong {
+    color: #333;
+}
+
+/* Кнопки */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.action-buttons a {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+}
+
+.logout-btn {
+    background-color: #f44336;
+    color: white;
+    text-decoration: none;
+
+}
+
+.edit-btn:hover {
+    background-color: #45a049;
+}
+
+.logout-btn:hover {
+    background-color: #e53935;
+}

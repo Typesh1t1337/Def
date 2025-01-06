@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,redirect
 from django.views.generic import View
@@ -20,13 +19,13 @@ class RegisterView(View):
 
         if password != password2:
             messages.error(request,'Passwords must match')
-        if User.objects.filter(username=username).exists():
+        if get_user_model().objects.filter(username=username).exists():
             messages.error(request,'Username already taken')
 
-        if User.objects.filter(email=email).exists():
+        if get_user_model().objects.filter(email=email).exists():
             messages.error(request,'Email already taken')
 
-        user = User.objects.create_user(username=username,email=email,password=password)
+        user = get_user_model().objects.create_user(username=username,email=email,password=password)
         user.save()
 
         login(request,user)

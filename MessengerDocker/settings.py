@@ -59,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    'celleryworker.set_online_middleware.UpdateOnlineMiddleware',
 ]
 
 ROOT_URLCONF = "MessengerDocker.urls"
@@ -131,6 +132,7 @@ USE_TZ = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+AUTH_USER_MODEL = 'account.CustomUser'
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -159,4 +161,19 @@ CHANNEL_LAYERS = {
             "hosts": [("redis_server", 6379)],
         },
     },
+}
+
+
+REDIS_HOST = os.environ.get('REDIS_HOST')
+REDIS_PORT = os.environ.get('REDIS_PORT')
+
+
+CACHES = {
+    'default':{
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+        'OPTIONS':{
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
 }

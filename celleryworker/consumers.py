@@ -1,8 +1,7 @@
-from datetime import  datetime
+from datetime import datetime
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from celery.result import AsyncResult
 from .tasks import *
 
 

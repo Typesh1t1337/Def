@@ -1,10 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import ValidationError
 
 class Chat(models.Model):
-    first_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='first_user')
-    second_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='second_user')
+    first_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='first_user')
+    second_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='second_user')
     last_message = models.TextField(max_length=500,null=True,blank=True)
     last_changes = models.DateTimeField(auto_now=True)
 
@@ -37,8 +37,8 @@ def file_validator(file):
         )
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='receiver')
     text = models.TextField(max_length=500)
     file = models.FileField(upload_to='messages/', default=None,validators=[file_validator],null=True,blank=True)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='chat', null=True)

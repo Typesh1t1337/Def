@@ -1,5 +1,6 @@
 from celery import shared_task
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from celleryworker.models import Chat, Message
 
 
@@ -7,8 +8,8 @@ from celleryworker.models import Chat, Message
 def save_message_task(chat_id,text,sender_id,receiver_id):
     try:
         chat = Chat.objects.get(id=chat_id)
-        sender = User.objects.get(id=sender_id)
-        receiver = User.objects.get(id=receiver_id)
+        sender = get_user_model().objects.get(id=sender_id)
+        receiver = get_user_model().objects.get(id=receiver_id)
 
         message = Message.objects.create(chat=chat, text=text, sender=sender, receiver=receiver)
 

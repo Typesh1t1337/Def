@@ -21,6 +21,8 @@ services:
       - DEBUG=1
       - SECRET_KEY=django-insecure-x2uz958vuqzfn_+sr4zvzys601j8z=fs6%u#fs%m=9t(toyn4t
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     entrypoint: /usr/src/app/entrypoint.sh
     depends_on:
       - redis
