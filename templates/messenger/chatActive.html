@@ -34,7 +34,11 @@
                     <a href="{% url 'chat' status.chat_id status.user %}">
                     <div class="avatar-con">
                         <div class="avatar">
-                            <img src="https://cdn-static.artguide.com/storage/news/9281/regular_detail_picture.jpg" alt="Current Chat">
+                            {% if status.user_object.photo %}
+                                <img src="{{ status.user_object.photo.url }}">
+                            {% else %}
+                                <img src="{% static 'no-profile-picture-icon.webp' %}">
+                            {% endif %}
                         </div>
                         {% if status.is_online %}
                                  <span class="online-status"></span>
@@ -55,7 +59,19 @@
         <div class="chat-header">
             <div class="avatar-con">
                  <div class="avatar">
-                <img src="https://cdn-static.artguide.com/storage/news/9281/regular_detail_picture.jpg" alt="Current Chat">
+                      {% if chat_between.first_user.id != user.id %}
+                          {% if chat_between.first_user.photo %}
+                            <img src="{{ chat_between.first_user.photo.url }}">
+                          {% else %}
+                                <img src="{% static 'no-profile-picture-icon.webp' %}">
+                          {% endif %}
+                      {% else %} 
+                          {% if chat_between.second_user.photo %}
+                            <img src="{{ chat_between.second_user.photo.url }}">
+                          {% else %}
+                                <img src="{% static 'no-profile-picture-icon.webp' %}">
+                          {% endif %}
+                      {% endif %}
                 </div>
                 {% if is_online %}
                     <span class="online-status"></span>
@@ -63,9 +79,9 @@
             </div>
             <div class="name">
                 {% if chat_between.first_user.id != user.id %}
-                    {{ chat_between.first_user }}
+                    <a style="text-decoration: none;color: white" href="{% url 'user_profile' chat_between.first_user %}">{{ chat_between.first_user }}</a>
                 {% else %}
-                    {{ chat_between.second_user }}
+                    <a style="text-decoration: none;color: white" href="{% url 'user_profile' chat_between.second_user %}">{{ chat_between.second_user }}</a>
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля</title>
+    <link href="{% static 'messenger/editprofile.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Редактирование профиля</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" required value="{{ user.username }}">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Электронная почта:</label>
+                <input type="email" id="email" name="email" required value="{{ user.email }}">
+            </div>
+
+            <div class="form-group">
+                <label for="firstname">Имя:</label>
+                <input type="text" id="firstname" name="firstname" required value="{{ user.first_name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="lastname">Фамилия:</label>
+                <input type="text" id="lastname" name="lastname" required value="{{ user.last_name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="photo">Фотография профиля:</label>
+                <div class="photo-upload-container" id="dropZone">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Перетащите фото сюда или кликните для выбора</div>
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                    <div class="photo-requirements">
+                        Поддерживаемые форматы: JPG, PNG. Максимальный размер: 5MB
+                    </div>
+                </div>
+                <div class="photo-preview" id="photoPreview">
+                    <img src="" alt="Preview">
+                    <button type="button" class="remove-photo">×</button>
+                </div>
+            </div>
+
+            <button type="submit" class="button">Сохранить</button>
+        </form>
+    </div>
+</body>
+<script src="{% static 'js/dragandload.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Находим все текстовые инпуты и email
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"]');
+    
+    inputs.forEach(input => {
+        // Проверяем начальное состояние
+        checkInputValue(input);
+        
+        // Слушаем изменения
+        input.addEventListener('input', () => checkInputValue(input));
+        
+        // При получении фокуса
+        input.addEventListener('focus', () => {
+            input.classList.remove('input-filled');
+            input.parentElement.classList.remove('has-value');
+        });
+        
+        // При потере фокуса
+        input.addEventListener('blur', () => checkInputValue(input));
+    });
+    
+    function checkInputValue(input) {
+        if (input.value.trim() !== '') {
+            input.classList.add('input-filled');
+            input.parentElement.classList.add('has-value');
+        } else {
+            input.classList.remove('input-filled');
+            input.parentElement.classList.remove('has-value');
+        }
+    }
+});
+</script>
+</html>

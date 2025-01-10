@@ -1,0 +1,198 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="file"] {
+            margin-top: 5px;
+        }
+
+        .photo-upload {
+            margin-top: 10px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .photo-upload-container {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.photo-upload-container:hover {
+    border-color: #4CAF50;
+    background-color: #f0f0f0;
+}
+
+.photo-upload-container.drag-over {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+}
+
+.photo-preview {
+    margin-top: 15px;
+    display: none;
+    position: relative;
+}
+
+.photo-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.photo-preview .remove-photo {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.photo-upload-container .upload-icon {
+    font-size: 40px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.photo-upload-container .upload-text {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.photo-upload-container input[type="file"] {
+    display: none;
+}
+
+.photo-requirements {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+}
+
+.input-filled {
+    background-color: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.input-filled::before {
+    content: "✓";
+    position: absolute;
+    right: 10px;
+    color: #48bb78;
+    font-size: 14px;
+}
+
+/* При наведении */
+.input-filled:hover {
+    background-color: #fff;
+    border-color: #cbd5e0;
+}
+
+/* При фокусе убираем специальные стили */
+.input-filled:focus {
+    background-color: #fff;
+    border-color: #4CAF50;
+    color: #1a202c;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.input-filled:focus::before {
+    display: none;
+}
+
+/* Стили для лейбла, когда инпут заполнен */
+.form-group.has-value label {
+    color: #48bb78;
+}
+
+/* Добавим подсказку о возможности редактирования */
+.input-filled:hover::after {
+    content: "Нажмите для редактирования";
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    background-color: #4a5568;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1;
+}

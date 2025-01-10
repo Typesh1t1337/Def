@@ -11,39 +11,43 @@
     <div class="profile-container">
         <div class="profile-header">
             <div class="avatar-container">
-                {% if user.photo %}
-                    <img src="{{ user.photo.url }}" class="avatar">
+                {% if user_object.photo %}
+                    <img src="{{ user_object.photo.url }}" class="avatar">
                 {% else %}
                     <img src="{% static 'no-profile-picture-icon.webp' %}" alt="User Avatar" class="avatar">
                 {% endif %}
-                <span class="online-status"></span>
+                {% if is_online %}
+                    <span class="online-status"></span>
+                {% endif %}
             </div>
             <div class="user-info">
-                <h2 class="username">{{ user.username }}</h2>
-                <p class="status">Online</p>
+                <h2 class="username">{{ user_object.username }}</h2>
+                {% if is_online %}
+                    <p class="status">Online</p>
+                {% endif %}
             </div>
         </div>
 
         <div class="profile-details">
             <h3>Profile Details</h3>
             <ul>
-                <li><strong>Email:</strong> {{ user.email }}</li>
-                {% if user.first_name%}
-                    <li><strong>First Name:</strong> {{ user.first_name }}</li>
+                <li><strong>Email:</strong> {{ user_object.email }}</li>
+                {% if user_object.first_name%}
+                    <li><strong>First Name:</strong> {{ user_object.first_name }}</li>
                 {% else %}
                     <li><strong>First Name:</strong>Not given</li>
                 {% endif %}
-                {% if user.last_name %}
-                    <li><strong>Last Name:</strong> {{ user.last_name }}</li>
+                {% if user_object.last_name %}
+                    <li><strong>Last Name:</strong> {{ user_object.last_name }}</li>
                 {% else %}
                     <li><strong>First Name:</strong> Not given</li>
                 {% endif %}
-            
+
             </ul>
         </div>
 
         <div class="action-buttons">
-            <a class="edit-btn" href="{% url 'edit_profile' user.username %}">Edit Profile</a>
+            <a class="edit-btn">Write</a>
             <a class="logout-btn" href="{% url 'index' %}">Go back</a>
         </div>
     </div>

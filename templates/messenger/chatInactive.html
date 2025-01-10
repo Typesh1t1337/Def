@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="menu-overlay" id="menuOverlay">
-        <div class="menu-item">Профиль</div>
+        <div class="menu-item"><a href="{% url 'profile' user.username %}">Профиль</a></div>
         <div class="menu-item"><a href="{% url 'search' %}">Поиск пользователей</a></div>
         <div class="menu-item"><a href="{% url 'logout' %}">Выйти</a></div>
     </div>
@@ -33,7 +33,11 @@
                     <a href="{% url 'chat' status.chat_id status.user %}">
                     <div class="avatar-con">
                         <div class="avatar">
-                            <img src="https://cdn-static.artguide.com/storage/news/9281/regular_detail_picture.jpg" alt="Current Chat">
+                            {% if status.user_object.photo %}
+                                <img src="{{ status.user_object.photo.url }}">
+                            {% else %}
+                                <img src="{% static 'no-profile-picture-icon.webp' %}">
+                            {% endif %}
                         </div>
                         {% if status.is_online %}
                                  <span class="online-status"></span>
@@ -47,7 +51,7 @@
                         </div>
                     </a>
                 </div>
-        {% endfor %}
+            {% endfor %}
     </div>
 </div>
 <div class="chat-container">

@@ -10,7 +10,7 @@
 <body>
 
     <div class="menu-overlay" id="menuOverlay">
-        <div class="menu-item">Профиль</div>
+        <div class="menu-item"><a href="{% url 'profile' user.username  %}">Профиль</a></div>
         <div class="menu-item"><a href="{% url 'index' %}">Список чатов</a></div>
         <div class="menu-item"><a href="{% url 'logout' %}">Выйти</a></div>
     </div>
@@ -42,10 +42,14 @@
                 {% if users %}
                     {% for user in users %}
                         <div class="user-card">
-                            <img src="https://via.placeholder.com/60" alt="Avatar" class="avatar">
+                            {% if user.photo %}
+                                <img src="{{ user.photo.url }}" alt="Avatar" class="avatar">
+                            {% else %}
+                                <img src="{% static 'no-profile-picture-icon.webp' %}">
+                            {% endif %}
                             <div class="user-info">
                                 <h3>{{ user.first_name  }} {{ user.last_name }}</h3>
-                                <p>@{{ user.username }}</p>
+                                <a style="color: #333333;text-decoration: none" href="{% url 'user_profile' user.username %}">@{{ user.username }}</a>
                             </div>
                             <form class="btn-container" method="get" action="{% url 'add_user_to_chat' user.username %}">
                                 {% csrf_token %}

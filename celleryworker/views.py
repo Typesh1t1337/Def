@@ -39,6 +39,7 @@ class IndexView(LoginRequiredMixin,ListView):
                     'user': chat.second_user,
                     'chat_id': chat.id,
                     'last_message': chat.last_message,
+                    'user_object': get_user_model().objects.get(username=chat.second_user),
                 }
             else:
                 contact_status[chat] = {
@@ -46,9 +47,10 @@ class IndexView(LoginRequiredMixin,ListView):
                     'user': chat.first_user,
                     'chat_id': chat.id,
                     'last_message': chat.last_message,
+                    'user_object': get_user_model().objects.get(username=chat.first_user),
                 }
 
-        context['user'] = self.request.user
+        context['user'] = user
         context['chat_list_map'] = contact_status
 
         return context
@@ -107,7 +109,7 @@ class Message_view(LoginRequiredMixin,View):
         messages = Message.objects.filter(chat=chat_between)
 
 
-        is_online = is_user_online(chat_between.first_user.id if chat_between.first_user == user else chat_between.second_user.id)
+        is_online = is_user_online(chat_between.second_user.id if chat_between.first_user == user else chat_between.first_user.id)
 
         contact_status = {}
 
@@ -119,6 +121,7 @@ class Message_view(LoginRequiredMixin,View):
                     'user': chat.second_user,
                     'chat_id': chat.id,
                     'last_message': chat.last_message,
+                    'user_object': get_user_model().objects.get(username=chat.second_user),
                 }
             else:
                 contact_status[chat] = {
@@ -126,6 +129,7 @@ class Message_view(LoginRequiredMixin,View):
                     'user': chat.first_user,
                     'chat_id': chat.id,
                     'last_message': chat.last_message,
+                    'user_object': get_user_model().objects.get(username=chat.first_user),
                 }
 
 
@@ -165,5 +169,68 @@ def add_user_to_chat(request, name):
 
 
 
-class ProfileView(LoginRequiredMixin,TemplateView):
+class ProfileView(LoginRequiredMixin,View):
     template_name = 'messenger/profile.html'
+
+
+    def get(self, request,name):
+        user = request.user
+        context = {
+            'user': user,
+        }
+        return render(request, self.template_name, context)
+
+
+class EditProfile(LoginRequiredMixin,View):
+    template_name = 'messenger/editprofile.html'
+
+    def get(self, request,name):
+        user = request.user
+        context = {
+            'user': user,
+        }
+        return render(request, self.template_name,context)
+
+
+    def post(self,request,name):
+        user = request.user
+        username = request.POST['username']
+        first_name = request.POST['firstname']
+        last_name = request.POST['lastname']
+        photo = request.FILES.get('photo', None)
+
+        if get_user_model().objects.filter(username=username).exclude(id=user.id).exists():
+            return redirect('profile', name)
+        else:
+            user_update = get_user_model().objects.get(username=user.username)
+            user_update.first_name = first_name
+            user_update.last_name = last_name
+            if photo:
+                user_update.photo = photo
+
+            user_update.username = username
+
+            user_update.save()
+
+
+        return redirect('profile',name)
+
+
+class UserProfileView(View):
+    template_name = 'messenger/userprofile.html'
+
+    def get(self, request, name):
+        user = request.user
+
+        user_object = get_user_model().objects.get(username=name)
+
+        is_online = is_user_online(user_object.id)
+
+        context = {
+            'user': user,
+            'user_object': user_object,
+            'is_online': is_online,
+        }
+
+
+        return render(request, self.template_name,context)
