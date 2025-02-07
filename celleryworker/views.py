@@ -10,6 +10,7 @@ from .set_online_middleware import *
 from .forms import *
 from .models import Chat,Message
 from django.db.models import Q
+from celleryworker.tasks import send_bulk_message_task
 
 
 class IndexView(LoginRequiredMixin,ListView):
@@ -234,3 +235,29 @@ class UserProfileView(View):
 
 
         return render(request, self.template_name,context)
+
+
+class MessageEmailSendVIew(LoginRequiredMixin,View):
+    template_name = 'messenger/email_send.html'
+    def get(self, request):
+        user = request.user
+        if not user.is_staff:
+            return redirect('index')
+
+        return render(self.request, self.template_name, {'user': user})
+
+    def post(self,request):
+        message = request.POST['email_message']
+
+        all_users_email = get_user_model().objects.all()
+
+        all_emails = []
+
+        for all_user in all_users_email:
+            all_emails.append(all_user.email)
+
+        send_bulk_message_task.delay(all_emails, message)
+
+        return redirect('index')
+
+

@@ -53,7 +53,7 @@
                             </div>
                             <form class="btn-container" method="get" action="{% url 'add_user_to_chat' user.username %}">
                                 {% csrf_token %}
-                                <button class="btn-write">Написать</button>
+                                <button class="btn-write">Write</button>
                             </form>
                         </div>
                     {% endfor %}

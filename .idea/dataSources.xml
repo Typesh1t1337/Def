@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="MessengerCelery@localhost" uuid="1c707ddf-faef-43f3-bc8e-f965be27d8df">
+    <data-source source="LOCAL" name="MessengerCelery@localhost" uuid="2c26e762-e8f0-4eba-9ffa-4241f6a99761">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/MessengerCelery</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5433/MessengerCelery</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -45,6 +45,9 @@
         <div class="action-buttons">
             <a class="edit-btn" href="{% url 'edit_profile' user.username %}">Edit Profile</a>
             <a class="logout-btn" href="{% url 'index' %}">Go back</a>
+            {% if user.is_staff %}
+                <a style="color:white;background-color: #1a73e8" href="{% url 'send_emails' %}">Сделать рассылку!</a>
+            {% endif %}
         </div>
     </div>
 </body>

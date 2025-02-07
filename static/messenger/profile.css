@@ -113,3 +113,12 @@ body {
 .logout-btn:hover {
     background-color: #e53935;
 }
+
+.edit-btn-sub{
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    padding:10px 25px;
+    border-radius: 5px;
+    border:none;
+}

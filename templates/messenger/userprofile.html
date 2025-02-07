@@ -47,7 +47,10 @@
         </div>
 
         <div class="action-buttons">
-            <a class="edit-btn">Write</a>
+            <form method="get" action="{% url 'add_user_to_chat' user.username %}">
+                {% csrf_token %}
+                <button class="edit-btn-sub" style="" type="submit">Write</button>
+            </form>
             <a class="logout-btn" href="{% url 'index' %}">Go back</a>
         </div>
     </div>
